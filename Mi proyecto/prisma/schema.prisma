@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Equipo {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  tipo        String
+  serial      String   @unique
+  ubicacion   String
+  qrCode      String   @unique
+  estado      EstadoEquipo @default(ACTIVO)
+  clienteId   Int
+  cliente     Cliente  @relation(fields: [clienteId], references: [id])
+  mantenimientos Mantenimiento[]
+  fotos       Foto[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Mantenimiento {
+  id          Int      @id @default(autoincrement())
+  fecha       DateTime @default(now())
+  descripcion String
+  tipo        TipoMantenimiento
+  estado      EstadoMantenimiento @default(PENDIENTE)
+  costo       Float?
+  materiales  String?
+  equipoId    Int
+  equipo      Equipo   @relation(fields: [equipoId], references: [id])
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int
+  fotos       Foto[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Foto {
+  id              Int           @id @default(autoincrement())
+  url             String
+  descripcion     String?
+  equipoId        Int?
+  equipo          Equipo?       @relation(fields: [equipoId], references: [id])
+  mantenimientoId Int?
+  mantenimiento   Mantenimiento? @relation(fields: [mantenimientoId], references: [id])
+  createdAt       DateTime      @default(now())
+}
+
+enum TipoMantenimiento {
+  PREVENTIVO
+  CORRECTIVO
+}
+
+enum EstadoMantenimiento {
+  PENDIENTE
+  EN_PROCESO
+  COMPLETADO
+  CANCELADO
+}
+
+enum EstadoEquipo {
+  ACTIVO
+  EN_MANTENIMIENTO
+  FUERA_DE_SERVICIO
+}
+
+model Usuario {
+  id             Int             @id @default(autoincrement())
+  nombre         String
+  email          String          @unique
+  password       String
+  rol            Rol            @default(TECNICO)
+  mantenimientos Mantenimiento[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  nit       String   @unique
+  direccion String?
+  telefono  String?
+  email     String?
+  equipos   Equipo[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Rol {
+  ADMIN
+  TECNICO
+  CLIENTE
+}
