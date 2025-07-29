@@ -1,0 +1,17 @@
+/* src/layout/MainLayout.css */
+
+.sidebar {
+  background-color: #1f2937; /* bg-gray-800 */
+  color: white;
+}
+
+.nav-link {
+  padding: 1rem;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.nav-link.active {
+  background-color: #111827; /* bg-gray-900 */
+}
